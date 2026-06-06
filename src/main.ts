@@ -1,10 +1,12 @@
 import { Application, Container } from "pixi.js";
-import { Pointer } from "./Pointer";
-import { ScreenFlash } from "./ScreenFlash";
 import { WeightedRandom } from "./WeightedRandom";
-import { Wheel } from "./Wheel";
-import { WheelController } from "./WheelController";
-import { WinAnimation } from "./WinAnimation";
+import {
+  Pointer,
+  ScreenFlash,
+  Wheel,
+  WheelController,
+  WinAnimation,
+} from "./features";
 
 const config = {
   background: "#1099bb",
