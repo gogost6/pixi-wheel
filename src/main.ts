@@ -10,6 +10,7 @@ import {
 
 const config = {
   background: "#1099bb",
+  margin: 40,
   wheel: {
     radius: 280,
     spinRevolutions: 4,
@@ -46,6 +47,14 @@ const config = {
     flickDuration: 0.1,
     returnDuration: 0.25,
   },
+  screenFlash: {
+    color: 0xffffff,
+    alpha: 0.2,
+    duration: 0.2,
+    ease: "power1.inOut",
+    width: 4000,
+    height: 4000,
+  },
 };
 
 class Game {
@@ -68,7 +77,7 @@ class Game {
     const pointer = new Pointer(config.pointer);
     pointer.position.set(0, -config.wheel.radius - config.pointer.offset);
     const winAnimation = new WinAnimation();
-    const screenFlash = new ScreenFlash();
+    const screenFlash = new ScreenFlash(config.screenFlash);
 
     stage.addChild(wheel, pointer, winAnimation, screenFlash);
 
@@ -97,7 +106,7 @@ class Game {
     const resize = () => {
       const cx = app.screen.width / 2;
       const cy = app.screen.height / 2;
-      const margin = 40;
+      const margin = config.margin;
       const maxSize = Math.min(cx, cy) - margin;
       const scale = Math.min(1, maxSize / config.wheel.radius);
       stage.scale.set(scale);
