@@ -3,6 +3,7 @@ import { Pointer } from "./Pointer";
 import { WeightedRandom } from "./WeightedRandom";
 import { Wheel } from "./Wheel";
 import { WheelController } from "./WheelController";
+import { WinAnimation } from "./WinAnimation";
 
 const config = {
   background: "#1099bb",
@@ -79,6 +80,14 @@ class Game {
     reposition();
     app.renderer.on("resize", reposition);
 
+    const winAnimation = new WinAnimation();
+    app.stage.addChild(winAnimation);
+
+    const onResize = () =>
+      winAnimation.resize(app.screen.width, app.screen.height);
+    onResize();
+    app.renderer.on("resize", onResize);
+
     const controller = new WheelController(wheel, pointer, app.ticker);
 
     const prizePicker = new WeightedRandom(config.wheel.prizes);
@@ -86,7 +95,14 @@ class Game {
     app.stage.eventMode = "static";
 
     app.stage.on("pointerdown", () => {
-      controller.spin(prizePicker.pick());
+      if (controller.isSpinning) {
+        controller.skipToEnd();
+        return;
+      }
+      if (winAnimation.visible) return;
+      controller.spin(prizePicker.pick(), (prize) => {
+        winAnimation.show(prize, () => {});
+      });
     });
   }
 }
