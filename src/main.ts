@@ -3,6 +3,8 @@ import { Application } from "pixi.js";
 import { Pointer } from "./Pointer";
 import { Wheel } from "./Wheel";
 
+const PRIZE_TO_WIN = 2;
+
 class Game {
   constructor() {
     this.start();
@@ -25,11 +27,17 @@ class Game {
     const pointer = new Pointer();
     app.stage.addChild(pointer);
 
+    let tween: gsap.core.Tween | null = null;
+
     app.stage.eventMode = "static";
+
     app.stage.on("pointerdown", () => {
-      wheel.rotation = 0; // Reset rotation before spinning
-      const prizeOffset = wheel.rotationOffset(2);
-      gsap.to(wheel, {
+      tween?.progress(1).kill();
+      wheel.rotation = 0;
+
+      const prizeOffset = wheel.rotationOffset(PRIZE_TO_WIN);
+
+      tween = gsap.to(wheel, {
         rotation: wheel.rotation + Math.PI * 2 * 5 + prizeOffset,
         duration: 3,
         ease: "power3.out",

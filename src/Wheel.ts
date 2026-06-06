@@ -4,7 +4,7 @@ const SEGMENT_COLORS = [
   0xff0000, 0x00ff00, 0x0000ff, 0xffff00, 0xff00ff, 0x00ffff, 0xff8800,
   0x88ff00, 0x0088ff, 0xff0088, 0x8800ff, 0x00ff88,
 ];
-const SEGMENT_LABELS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+const SEGMENT_LABELS = [0.1, 0.2, 0.5, 1, 2, 5, 10, 20, 50, 100, 200, 500];
 
 export class Wheel extends Container {
   constructor() {
@@ -44,11 +44,20 @@ export class Wheel extends Container {
     }
   }
 
-  rotationOffset(prize: number): number {
+  rotationOffset(
+    prize: number,
+    randomOrCenter: "random" | "center" = "random",
+  ): number {
     const segments = SEGMENT_LABELS.length;
     const angleStep = (Math.PI * 2) / segments;
     const segmentIndex = SEGMENT_LABELS.indexOf(prize);
-    const centerAngle = segmentIndex * angleStep + angleStep / 2;
-    return (3 * Math.PI) / 2 - centerAngle;
+    const centerShift = -angleStep / 2;
+    const left = -angleStep * 0.1;
+    const right = -angleStep * 0.9;
+    const randomShift = Math.random() * (right - left) + left;
+    const inSegment = (3 * Math.PI) / 2 - segmentIndex * angleStep;
+    const shift = randomOrCenter === "random" ? randomShift : centerShift;
+
+    return inSegment + shift;
   }
 }
