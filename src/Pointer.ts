@@ -17,16 +17,17 @@ export class Pointer extends Container {
   }
 
   flick() {
-    gsap.killTweensOf(this);
     gsap.to(this, {
       angle: -20,
-      duration: 0.07,
-      ease: "power1.out",
+      duration: 0.1,
+      ease: "power2.out",
+      overwrite: "auto",
       onComplete: () => {
         gsap.to(this, {
           angle: 0,
-          duration: 0.35,
-          ease: "elastic.out(1, 0.4)",
+          duration: 0.25,
+          ease: "elastic.out(1.2, 0.5)",
+          overwrite: "auto",
         });
       },
     });
