@@ -1,35 +1,41 @@
-import { Application, Assets, Sprite } from "pixi.js";
+import gsap from "gsap";
+import { Application } from "pixi.js";
+import { Pointer } from "./Pointer";
+import { Wheel } from "./Wheel";
 
-(async () => {
-  // Create a new application
-  const app = new Application();
+class Game {
+  constructor() {
+    this.start();
+  }
 
-  // Initialize the application
-  await app.init({ background: "#1099bb", resizeTo: window });
+  async start() {
+    // Create a new application
+    const app = new Application();
+    globalThis.__PIXI_APP__ = app;
 
-  // Append the application canvas to the document body
-  document.getElementById("pixi-container")!.appendChild(app.canvas);
+    // Initialize the application
+    await app.init({ background: "#1099bb", resizeTo: window });
 
-  // Load the bunny texture
-  const texture = await Assets.load("/assets/bunny.png");
+    // Append the application canvas to the document body
+    document.getElementById("pixi-container")!.appendChild(app.canvas);
 
-  // Create a bunny Sprite
-  const bunny = new Sprite(texture);
+    const wheel = new Wheel();
+    app.stage.addChild(wheel);
 
-  // Center the sprite's anchor point
-  bunny.anchor.set(0.5);
+    const pointer = new Pointer();
+    app.stage.addChild(pointer);
 
-  // Move the sprite to the center of the screen
-  bunny.position.set(app.screen.width / 2, app.screen.height / 2);
+    app.stage.eventMode = "static";
+    app.stage.on("pointerdown", () => {
+      wheel.rotation = 0; // Reset rotation before spinning
+      const prizeOffset = wheel.rotationOffset(2);
+      gsap.to(wheel, {
+        rotation: wheel.rotation + Math.PI * 2 * 5 + prizeOffset,
+        duration: 3,
+        ease: "power3.out",
+      });
+    });
+  }
+}
 
-  // Add the bunny to the stage
-  app.stage.addChild(bunny);
-
-  // Listen for animate update
-  app.ticker.add((time) => {
-    // Just for fun, let's rotate mr rabbit a little.
-    // * Delta is 1 if running at 100% performance *
-    // * Creates frame-independent transformation *
-    bunny.rotation += 0.1 * time.deltaTime;
-  });
-})();
+new Game();
