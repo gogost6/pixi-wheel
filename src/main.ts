@@ -59,37 +59,21 @@ class Game {
 
     document.getElementById("pixi-container")!.appendChild(app.canvas);
 
+    const stage = new Container();
+    app.stage.addChild(stage);
+
     const wheel = new Wheel(config.wheel);
     const pointer = new Pointer(config.pointer);
     pointer.position.set(0, -config.wheel.radius - config.pointer.offset);
-
-    const stage = new Container();
-    stage.addChild(wheel, pointer);
-    app.stage.addChild(stage);
-
-    const resize = () => {
-      const cx = app.screen.width / 2;
-      const cy = app.screen.height / 2;
-      const margin = 40;
-      const maxSize = Math.min(cx, cy) - margin;
-      const scale = Math.min(1, maxSize / config.wheel.radius);
-      stage.scale.set(scale);
-      stage.position.set(cx, cy);
-    };
-
     const winAnimation = new WinAnimation();
     const screenFlash = new ScreenFlash();
 
-    stage.addChild(winAnimation, screenFlash);
-
-    resize();
-    app.renderer.on("resize", resize);
+    stage.addChild(wheel, pointer, winAnimation, screenFlash);
 
     const wheelController = new WheelController(wheel, pointer, app.ticker);
     const prizePicker = new WeightedRandom(config.wheel.prizes);
 
     app.stage.eventMode = "static";
-
     app.stage.on("pointerdown", () => {
       if (document.body.style.cursor === "pointer") {
         screenFlash.flash();
@@ -107,6 +91,18 @@ class Game {
         winAnimation.show(prize);
       });
     });
+
+    const resize = () => {
+      const cx = app.screen.width / 2;
+      const cy = app.screen.height / 2;
+      const margin = 40;
+      const maxSize = Math.min(cx, cy) - margin;
+      const scale = Math.min(1, maxSize / config.wheel.radius);
+      stage.scale.set(scale);
+      stage.position.set(cx, cy);
+    };
+    resize();
+    app.renderer.on("resize", resize);
   }
 }
 
