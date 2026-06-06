@@ -2,8 +2,6 @@ import gsap from "gsap";
 import { Container, Graphics, Text } from "pixi.js";
 
 export interface WheelConfig {
-  x: number;
-  y: number;
   radius: number;
   spinRevolutions: number;
   spinDuration: number;
@@ -21,7 +19,6 @@ export class Wheel extends Container {
   constructor(config: WheelConfig) {
     super();
     this.config = config;
-    this.position.set(config.x, config.y);
     this.drawWheel(config.radius, config.labels.length);
   }
 
