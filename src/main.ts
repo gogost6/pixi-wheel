@@ -1,5 +1,6 @@
 import { Application, Container } from "pixi.js";
 import { Pointer } from "./Pointer";
+import { ScreenFlash } from "./ScreenFlash";
 import { WeightedRandom } from "./WeightedRandom";
 import { Wheel } from "./Wheel";
 import { WheelController } from "./WheelController";
@@ -88,6 +89,13 @@ class Game {
     onResize();
     app.renderer.on("resize", onResize);
 
+    const screenFlash = new ScreenFlash();
+    app.stage.addChild(screenFlash);
+    const onFlashResize = () =>
+      screenFlash.resize(app.screen.width, app.screen.height);
+    onFlashResize();
+    app.renderer.on("resize", onFlashResize);
+
     const controller = new WheelController(wheel, pointer, app.ticker);
 
     const prizePicker = new WeightedRandom(config.wheel.prizes);
@@ -95,6 +103,9 @@ class Game {
     app.stage.eventMode = "static";
 
     app.stage.on("pointerdown", () => {
+      if (document.body.style.cursor === "pointer") {
+        screenFlash.flash();
+      }
       if (controller.isSpinning) {
         controller.skipToEnd();
         return;
