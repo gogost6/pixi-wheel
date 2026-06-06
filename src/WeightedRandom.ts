@@ -22,14 +22,4 @@ export class WeightedRandom<T> {
     }
     return this.entries[this.entries.length - 1].value;
   }
-
-  /** Build a WeightedRandom where each successive value has weight = base^(-index),
-   *  so later (bigger) entries get progressively lower chances. */
-  static fromDecaying<T>(values: T[], base = 2): WeightedRandom<T> {
-    const entries = values.map((value, i) => ({
-      value,
-      weight: Math.pow(base, -i),
-    }));
-    return new WeightedRandom(entries);
-  }
 }
