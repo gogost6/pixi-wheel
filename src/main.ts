@@ -25,6 +25,7 @@ class Game {
     app.stage.addChild(wheel);
 
     const pointer = new Pointer();
+    pointer.position.set(400, wheel.y - wheel.height / 2 + 20);
     app.stage.addChild(pointer);
 
     let tween: gsap.core.Tween | null = null;

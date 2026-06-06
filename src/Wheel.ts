@@ -10,7 +10,7 @@ export class Wheel extends Container {
   constructor() {
     super();
     this.position.set(400, 300);
-    this.drawWheel(150, 12);
+    this.drawWheel(280, 12);
   }
 
   drawWheel(radius: number, segments: number) {
@@ -22,7 +22,11 @@ export class Wheel extends Container {
         .moveTo(0, 0)
         .arc(0, 0, radius, i * angleStep, (i + 1) * angleStep)
         .lineTo(0, 0)
-        .fill(SEGMENT_COLORS[i % SEGMENT_COLORS.length]);
+        .fill(SEGMENT_COLORS[i % SEGMENT_COLORS.length])
+        .moveTo(0, 0)
+        .arc(0, 0, radius, i * angleStep, (i + 1) * angleStep)
+        .lineTo(0, 0)
+        .stroke({ color: 0x000000, width: 2 });
       segment.addChild(graphics);
 
       const text = new Text({
@@ -34,8 +38,8 @@ export class Wheel extends Container {
       });
       text.anchor.set(0.5);
       text.position.set(
-        Math.cos(i * angleStep + angleStep / 2) * (radius / 2),
-        Math.sin(i * angleStep + angleStep / 2) * (radius / 2),
+        Math.cos(i * angleStep + angleStep / 2) * (radius * 0.65),
+        Math.sin(i * angleStep + angleStep / 2) * (radius * 0.65),
       );
       text.rotation = i * angleStep + angleStep / 2 + Math.PI / 2;
       segment.addChild(text);
