@@ -1,9 +1,36 @@
-import gsap from "gsap";
 import { Application } from "pixi.js";
 import { Pointer } from "./Pointer";
 import { Wheel } from "./Wheel";
+import { WheelController } from "./WheelController";
 
-const PRIZE_TO_WIN = 2;
+const config = {
+  background: "#1099bb",
+  prize: 2,
+  wheel: {
+    x: 400,
+    y: 300,
+    radius: 280,
+    spinRevolutions: 4,
+    spinDuration: 6,
+    colors: [
+      0xff0000, 0x00ff00, 0x0000ff, 0xffff00, 0xff00ff, 0x00ffff, 0xff8800,
+      0x88ff00, 0x0088ff, 0xff0088, 0x8800ff, 0x00ff88,
+    ],
+    labels: [0.1, 0.2, 0.5, 1, 2, 5, 10, 20, 50, 100, 200, 500],
+    borderColor: 0x000000,
+    borderWidth: 2,
+    labelFontSize: 14,
+    labelColor: 0xffffff,
+  },
+  pointer: {
+    color: 0xff0000,
+    halfWidth: 15,
+    height: 40,
+    flickAngle: -20,
+    flickDuration: 0.1,
+    returnDuration: 0.25,
+  },
+};
 
 class Game {
   constructor() {
@@ -11,48 +38,26 @@ class Game {
   }
 
   async start() {
-    // Create a new application
     const app = new Application();
     globalThis.__PIXI_APP__ = app;
 
-    // Initialize the application
-    await app.init({ background: "#1099bb", resizeTo: window });
+    await app.init({ background: config.background, resizeTo: window });
 
-    // Append the application canvas to the document body
     document.getElementById("pixi-container")!.appendChild(app.canvas);
 
-    const wheel = new Wheel();
+    const wheel = new Wheel(config.wheel);
     app.stage.addChild(wheel);
 
-    const pointer = new Pointer();
-    pointer.position.set(400, 0);
+    const pointer = new Pointer(config.pointer);
+    pointer.position.set(config.wheel.x, 0);
     app.stage.addChild(pointer);
 
-    let tween: gsap.core.Tween | null = null;
-    const angleStep = (Math.PI * 2) / 12;
-    let lastBorderCount = 0;
-
-    app.ticker.add(() => {
-      const borderCount = Math.floor(wheel.rotation / angleStep);
-      if (borderCount !== lastBorderCount) {
-        pointer.flick();
-        lastBorderCount = borderCount;
-      }
-    });
+    const controller = new WheelController(wheel, pointer, app.ticker);
 
     app.stage.eventMode = "static";
 
     app.stage.on("pointerdown", () => {
-      tween?.progress(1).kill();
-      wheel.rotation = 0;
-
-      const prizeOffset = wheel.rotationOffset(PRIZE_TO_WIN);
-
-      tween = gsap.to(wheel, {
-        rotation: wheel.rotation + Math.PI * 2 * 4 + prizeOffset,
-        duration: 6,
-        ease: "power3.out",
-      });
+      controller.spin(config.prize);
     });
   }
 }

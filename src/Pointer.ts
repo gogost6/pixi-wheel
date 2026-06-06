@@ -1,31 +1,45 @@
 import gsap from "gsap";
 import { Container, Graphics } from "pixi.js";
 
+export interface PointerConfig {
+  color: number;
+  halfWidth: number;
+  height: number;
+  flickAngle: number;
+  flickDuration: number;
+  returnDuration: number;
+}
+
 export class Pointer extends Container {
-  constructor() {
+  private config: PointerConfig;
+
+  constructor(config: PointerConfig) {
     super();
+    this.config = config;
     this.drawPointer();
   }
 
   drawPointer() {
+    const { color, halfWidth, height } = this.config;
     const graphics = new Graphics()
-      .moveTo(-15, 0)
-      .lineTo(15, 0)
-      .lineTo(0, 40)
-      .fill(0xff0000);
+      .moveTo(-halfWidth, 0)
+      .lineTo(halfWidth, 0)
+      .lineTo(0, height)
+      .fill(color);
     this.addChild(graphics);
   }
 
   flick() {
+    const { flickAngle, flickDuration, returnDuration } = this.config;
     gsap.to(this, {
-      angle: -20,
-      duration: 0.1,
+      angle: flickAngle,
+      duration: flickDuration,
       ease: "power2.out",
       overwrite: "auto",
       onComplete: () => {
         gsap.to(this, {
           angle: 0,
-          duration: 0.25,
+          duration: returnDuration,
           ease: "elastic.out(1.2, 0.5)",
           overwrite: "auto",
         });

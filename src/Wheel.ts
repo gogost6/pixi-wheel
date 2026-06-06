@@ -1,19 +1,39 @@
+import gsap from "gsap";
 import { Container, Graphics, Text } from "pixi.js";
 
-const SEGMENT_COLORS = [
-  0xff0000, 0x00ff00, 0x0000ff, 0xffff00, 0xff00ff, 0x00ffff, 0xff8800,
-  0x88ff00, 0x0088ff, 0xff0088, 0x8800ff, 0x00ff88,
-];
-const SEGMENT_LABELS = [0.1, 0.2, 0.5, 1, 2, 5, 10, 20, 50, 100, 200, 500];
+export interface WheelConfig {
+  x: number;
+  y: number;
+  radius: number;
+  spinRevolutions: number;
+  spinDuration: number;
+  colors: number[];
+  labels: number[];
+  borderColor: number;
+  borderWidth: number;
+  labelFontSize: number;
+  labelColor: number;
+}
 
 export class Wheel extends Container {
-  constructor() {
+  private config: WheelConfig;
+
+  constructor(config: WheelConfig) {
     super();
-    this.position.set(400, 300);
-    this.drawWheel(280, 12);
+    this.config = config;
+    this.position.set(config.x, config.y);
+    this.drawWheel(config.radius, config.labels.length);
   }
 
   drawWheel(radius: number, segments: number) {
+    const {
+      colors,
+      labels,
+      borderColor,
+      borderWidth,
+      labelFontSize,
+      labelColor,
+    } = this.config;
     const angleStep = (Math.PI * 2) / segments;
 
     for (let i = 0; i < segments; i++) {
@@ -22,18 +42,18 @@ export class Wheel extends Container {
         .moveTo(0, 0)
         .arc(0, 0, radius, i * angleStep, (i + 1) * angleStep)
         .lineTo(0, 0)
-        .fill(SEGMENT_COLORS[i % SEGMENT_COLORS.length])
+        .fill(colors[i % colors.length])
         .moveTo(0, 0)
         .arc(0, 0, radius, i * angleStep, (i + 1) * angleStep)
         .lineTo(0, 0)
-        .stroke({ color: 0x000000, width: 2 });
+        .stroke({ color: borderColor, width: borderWidth });
       segment.addChild(graphics);
 
       const text = new Text({
-        text: SEGMENT_LABELS[i % SEGMENT_LABELS.length],
+        text: labels[i % labels.length],
         style: {
-          fontSize: 14,
-          fill: 0xffffff,
+          fontSize: labelFontSize,
+          fill: labelColor,
         },
       });
       text.anchor.set(0.5);
@@ -48,13 +68,28 @@ export class Wheel extends Container {
     }
   }
 
+  get segmentCount(): number {
+    return this.config.labels.length;
+  }
+
+  spin(prize: number): gsap.core.Tween {
+    const { spinRevolutions, spinDuration } = this.config;
+    this.rotation = 0;
+    return gsap.to(this, {
+      rotation: Math.PI * 2 * spinRevolutions + this.rotationOffset(prize),
+      duration: spinDuration,
+      ease: "power3.out",
+    });
+  }
+
   rotationOffset(
     prize: number,
     randomOrCenter: "random" | "center" = "random",
   ): number {
-    const segments = SEGMENT_LABELS.length;
+    const { labels } = this.config;
+    const segments = labels.length;
     const angleStep = (Math.PI * 2) / segments;
-    const segmentIndex = SEGMENT_LABELS.indexOf(prize);
+    const segmentIndex = labels.indexOf(prize);
     const centerShift = -angleStep / 2;
     const left = -angleStep * 0.1;
     const right = -angleStep * 0.9;
