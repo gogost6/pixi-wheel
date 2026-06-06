@@ -25,10 +25,20 @@ class Game {
     app.stage.addChild(wheel);
 
     const pointer = new Pointer();
-    pointer.position.set(400, wheel.y - wheel.height / 2 + 20);
+    pointer.position.set(400, 0);
     app.stage.addChild(pointer);
 
     let tween: gsap.core.Tween | null = null;
+    const angleStep = (Math.PI * 2) / 12;
+    let lastBorderCount = 0;
+
+    app.ticker.add(() => {
+      const borderCount = Math.floor(wheel.rotation / angleStep);
+      if (borderCount !== lastBorderCount) {
+        pointer.flick();
+        lastBorderCount = borderCount;
+      }
+    });
 
     app.stage.eventMode = "static";
 
@@ -39,8 +49,8 @@ class Game {
       const prizeOffset = wheel.rotationOffset(PRIZE_TO_WIN);
 
       tween = gsap.to(wheel, {
-        rotation: wheel.rotation + Math.PI * 2 * 5 + prizeOffset,
-        duration: 3,
+        rotation: wheel.rotation + Math.PI * 2 * 4 + prizeOffset,
+        duration: 6,
         ease: "power3.out",
       });
     });
