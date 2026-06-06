@@ -99,7 +99,10 @@ class Game {
         controller.skipToEnd();
         return;
       }
-      if (winAnimation.visible) return;
+      if (winAnimation.visible) {
+        winAnimation.skip();
+        return;
+      }
       controller.spin(prizePicker.pick(), (prize) => {
         winAnimation.show(prize, () => {});
       });

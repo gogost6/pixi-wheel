@@ -17,6 +17,8 @@ export class WinAnimation extends Container {
   private overlay: Graphics;
   private tierText: Text;
   private counterText: Text;
+  private tl?: gsap.core.Timeline;
+  private tween?: gsap.core.Tween;
 
   constructor() {
     super();
@@ -90,6 +92,7 @@ export class WinAnimation extends Container {
     gsap.killTweensOf(this.counterText.scale);
 
     const tl = gsap.timeline();
+    this.tl = tl;
     tl.to(this, { alpha: 1, duration: 0.3, ease: "power1.out" })
       .to(
         this.tierText.scale,
@@ -103,10 +106,10 @@ export class WinAnimation extends Container {
       );
 
     const counter = { value: 0 };
-    gsap.to(counter, {
+    const tween = gsap.to(counter, {
       value: prize,
-      duration: 2.5,
-      ease: "power2.out",
+      duration: 4,
+      ease: "power1.out",
       onUpdate: () => {
         this.counterText.text = counter.value.toFixed(2);
       },
@@ -114,8 +117,7 @@ export class WinAnimation extends Container {
         this.dismiss(onDismiss);
       },
     });
-
-    this.on("pointerdown", () => this.dismiss(onDismiss));
+    this.tween = tween;
   }
 
   private dismiss(onDismiss: () => void) {
@@ -130,5 +132,10 @@ export class WinAnimation extends Container {
         onDismiss();
       },
     });
+  }
+
+  skip() {
+    this.tl?.progress(1);
+    this.tween?.progress(1);
   }
 }
