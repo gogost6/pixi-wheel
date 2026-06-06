@@ -6,7 +6,7 @@ export interface WheelConfig {
   spinRevolutions: number;
   spinDuration: number;
   colors: number[];
-  labels: number[];
+  prizes: { value: number; weight: number }[];
   borderColor: number;
   borderWidth: number;
   labelFontSize: number;
@@ -19,13 +19,13 @@ export class Wheel extends Container {
   constructor(config: WheelConfig) {
     super();
     this.config = config;
-    this.drawWheel(config.radius, config.labels.length);
+    this.drawWheel(config.radius, config.prizes.length);
   }
 
   drawWheel(radius: number, segments: number) {
     const {
       colors,
-      labels,
+      prizes,
       borderColor,
       borderWidth,
       labelFontSize,
@@ -47,7 +47,7 @@ export class Wheel extends Container {
       segment.addChild(graphics);
 
       const text = new Text({
-        text: labels[i % labels.length],
+        text: prizes[i % prizes.length].value,
         style: {
           fontSize: labelFontSize,
           fill: labelColor,
@@ -66,7 +66,7 @@ export class Wheel extends Container {
   }
 
   get segmentCount(): number {
-    return this.config.labels.length;
+    return this.config.prizes.length;
   }
 
   spin(prize: number): gsap.core.Tween {
@@ -83,10 +83,10 @@ export class Wheel extends Container {
     prize: number,
     randomOrCenter: "random" | "center" = "random",
   ): number {
-    const { labels } = this.config;
-    const segments = labels.length;
+    const { prizes } = this.config;
+    const segments = prizes.length;
     const angleStep = (Math.PI * 2) / segments;
-    const segmentIndex = labels.indexOf(prize);
+    const segmentIndex = prizes.findIndex((p) => p.value === prize);
     const centerShift = -angleStep / 2;
     const left = -angleStep * 0.1;
     const right = -angleStep * 0.9;

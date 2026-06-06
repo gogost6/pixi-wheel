@@ -1,11 +1,11 @@
 import { Application, Container } from "pixi.js";
 import { Pointer } from "./Pointer";
+import { WeightedRandom } from "./WeightedRandom";
 import { Wheel } from "./Wheel";
 import { WheelController } from "./WheelController";
 
 const config = {
   background: "#1099bb",
-  prize: 2,
   wheel: {
     radius: 280,
     spinRevolutions: 4,
@@ -14,7 +14,20 @@ const config = {
       0xff0000, 0x00ff00, 0x0000ff, 0xffff00, 0xff00ff, 0x00ffff, 0xff8800,
       0x88ff00, 0x0088ff, 0xff0088, 0x8800ff, 0x00ff88,
     ],
-    labels: [0.1, 0.2, 0.5, 1, 2, 5, 10, 20, 50, 100, 200, 500],
+    prizes: [
+      { value: 0.1, weight: 10000000 },
+      { value: 0.2, weight: 5000000 },
+      { value: 0.5, weight: 2000000 },
+      { value: 1, weight: 1000000 },
+      { value: 2, weight: 500000 },
+      { value: 5, weight: 100000 },
+      { value: 10, weight: 50000 },
+      { value: 20, weight: 10000 },
+      { value: 50, weight: 5000 },
+      { value: 100, weight: 1000 },
+      { value: 200, weight: 100 },
+      { value: 500, weight: 10 },
+    ],
     borderColor: 0x000000,
     borderWidth: 2,
     labelFontSize: 14,
@@ -68,10 +81,12 @@ class Game {
 
     const controller = new WheelController(wheel, pointer, app.ticker);
 
+    const prizePicker = new WeightedRandom(config.wheel.prizes);
+
     app.stage.eventMode = "static";
 
     app.stage.on("pointerdown", () => {
-      controller.spin(config.prize);
+      controller.spin(prizePicker.pick());
     });
   }
 }
