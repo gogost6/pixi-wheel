@@ -67,7 +67,7 @@ class Game {
     stage.addChild(wheel, pointer);
     app.stage.addChild(stage);
 
-    const reposition = () => {
+    const resize = () => {
       const cx = app.screen.width / 2;
       const cy = app.screen.height / 2;
       const margin = 40;
@@ -77,16 +77,10 @@ class Game {
       stage.position.set(cx, cy);
     };
 
-    const resize = () => {
-      reposition();
-      winAnimation.resize(app.screen.width, app.screen.height);
-      screenFlash.resize(app.screen.width, app.screen.height);
-    };
-
     const winAnimation = new WinAnimation();
     const screenFlash = new ScreenFlash();
 
-    app.stage.addChild(winAnimation, screenFlash);
+    stage.addChild(winAnimation, screenFlash);
 
     resize();
     app.renderer.on("resize", resize);

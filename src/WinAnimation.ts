@@ -25,7 +25,10 @@ export class WinAnimation extends Container {
     this.visible = false;
     this.eventMode = "static";
 
-    this.overlay = new Graphics();
+    this.overlay = new Graphics()
+      .rect(0, 0, 2000, 2000)
+      .fill({ color: 0x000000, alpha: 0.75 });
+    this.overlay.pivot.set(1000, 1000);
     this.addChild(this.overlay);
 
     this.tierText = new Text({
@@ -60,16 +63,9 @@ export class WinAnimation extends Container {
       },
     });
     this.counterText.anchor.set(0.5);
-    this.addChild(this.counterText);
-  }
+    this.counterText.position.set(0, 60);
 
-  resize(width: number, height: number) {
-    this.overlay
-      .clear()
-      .rect(0, 0, width, height)
-      .fill({ color: 0x000000, alpha: 0.75 });
-    this.tierText.position.set(width / 2, height / 2 - 50);
-    this.counterText.position.set(width / 2, height / 2 + 60);
+    this.addChild(this.counterText);
   }
 
   show(prize: number) {
@@ -81,6 +77,7 @@ export class WinAnimation extends Container {
     document.body.style.cursor = "pointer";
 
     this.tierText.text = tier.label;
+    this.tierText.position.set(0, -50);
     (this.tierText.style as { fill: number }).fill = tier.color;
     this.counterText.text = "0.00";
     this.tierText.scale.set(0);

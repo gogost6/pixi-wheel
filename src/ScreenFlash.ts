@@ -6,10 +6,8 @@ export class ScreenFlash extends Graphics {
     super();
     this.alpha = 0;
     this.eventMode = "none";
-  }
-
-  resize(width: number, height: number) {
-    this.clear().rect(0, 0, width, height).fill(0xffffff);
+    this.clear().rect(0, 0, 2000, 2000).fill(0xffffff);
+    this.pivot.set(1000, 1000);
   }
 
   flash() {
