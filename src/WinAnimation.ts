@@ -72,12 +72,13 @@ export class WinAnimation extends Container {
     this.counterText.position.set(width / 2, height / 2 + 60);
   }
 
-  show(prize: number, onDismiss: () => void) {
+  show(prize: number) {
     const tier = WIN_TIERS.find((t) => prize >= t.minValue);
     if (!tier) {
-      onDismiss();
       return;
     }
+
+    document.body.style.cursor = "pointer";
 
     this.tierText.text = tier.label;
     (this.tierText.style as { fill: number }).fill = tier.color;
@@ -114,13 +115,14 @@ export class WinAnimation extends Container {
         this.counterText.text = counter.value.toFixed(2);
       },
       onComplete: () => {
-        this.dismiss(onDismiss);
+        document.body.style.cursor = "default";
+        this.dismiss();
       },
     });
     this.tween = tween;
   }
 
-  private dismiss(onDismiss: () => void) {
+  private dismiss() {
     gsap.killTweensOf(this);
     gsap.to(this, {
       alpha: 0,
@@ -129,7 +131,6 @@ export class WinAnimation extends Container {
       ease: "power1.in",
       onComplete: () => {
         this.visible = false;
-        onDismiss();
       },
     });
   }

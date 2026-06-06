@@ -103,8 +103,9 @@ class Game {
         winAnimation.skip();
         return;
       }
+      document.body.style.cursor = "pointer";
       controller.spin(prizePicker.pick(), (prize) => {
-        winAnimation.show(prize, () => {});
+        winAnimation.show(prize);
       });
     });
   }

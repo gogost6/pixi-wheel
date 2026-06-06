@@ -39,6 +39,7 @@ export class WheelController {
     this.currentTween = this.wheel.spin(prize);
     this.currentTween.eventCallback("onComplete", () => {
       this._isSpinning = false;
+      document.body.style.cursor = "default";
       onComplete(prize);
     });
   }
