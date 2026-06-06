@@ -64,8 +64,7 @@ class Game {
     pointer.position.set(0, -config.wheel.radius - config.pointer.offset);
 
     const stage = new Container();
-    stage.addChild(wheel);
-    stage.addChild(pointer);
+    stage.addChild(wheel, pointer);
     app.stage.addChild(stage);
 
     const reposition = () => {
@@ -78,26 +77,21 @@ class Game {
       stage.position.set(cx, cy);
     };
 
-    reposition();
-    app.renderer.on("resize", reposition);
+    const resize = () => {
+      reposition();
+      winAnimation.resize(app.screen.width, app.screen.height);
+      screenFlash.resize(app.screen.width, app.screen.height);
+    };
 
     const winAnimation = new WinAnimation();
-    app.stage.addChild(winAnimation);
-
-    const onResize = () =>
-      winAnimation.resize(app.screen.width, app.screen.height);
-    onResize();
-    app.renderer.on("resize", onResize);
-
     const screenFlash = new ScreenFlash();
-    app.stage.addChild(screenFlash);
-    const onFlashResize = () =>
-      screenFlash.resize(app.screen.width, app.screen.height);
-    onFlashResize();
-    app.renderer.on("resize", onFlashResize);
 
-    const controller = new WheelController(wheel, pointer, app.ticker);
+    app.stage.addChild(winAnimation, screenFlash);
 
+    resize();
+    app.renderer.on("resize", resize);
+
+    const wheelController = new WheelController(wheel, pointer, app.ticker);
     const prizePicker = new WeightedRandom(config.wheel.prizes);
 
     app.stage.eventMode = "static";
@@ -106,8 +100,8 @@ class Game {
       if (document.body.style.cursor === "pointer") {
         screenFlash.flash();
       }
-      if (controller.isSpinning) {
-        controller.skipToEnd();
+      if (wheelController.isSpinning) {
+        wheelController.skipToEnd();
         return;
       }
       if (winAnimation.visible) {
@@ -115,7 +109,7 @@ class Game {
         return;
       }
       document.body.style.cursor = "pointer";
-      controller.spin(prizePicker.pick(), (prize) => {
+      wheelController.spin(prizePicker.pick(), (prize) => {
         winAnimation.show(prize);
       });
     });
