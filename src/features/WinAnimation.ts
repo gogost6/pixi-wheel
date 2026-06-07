@@ -97,14 +97,18 @@ export class WinAnimation extends Container {
     this.addChild(this.counterText);
   }
 
-  show(prize: number) {
+  show(
+    prize: number,
+    onStart: () => void = () => {},
+    onComplete: () => void = () => {},
+  ) {
     const tier = this.config.tiers.find((t) => prize >= t.minValue);
 
     if (!tier) {
       return;
     }
 
-    document.body.style.cursor = "pointer";
+    onStart();
 
     this.tierText.text = tier.label;
     this.tierText.style.fill = tier.color;
@@ -157,7 +161,7 @@ export class WinAnimation extends Container {
         this.counterText.text = counter.value.toFixed(2);
       },
       onComplete: () => {
-        document.body.style.cursor = "default";
+        onComplete();
         this.dismiss();
       },
     });

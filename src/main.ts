@@ -8,6 +8,7 @@ import {
   WheelController,
   WinAnimation,
 } from "./features";
+import { BottomBar } from "./features/BottomBar";
 
 class Game {
   constructor() {
@@ -25,6 +26,7 @@ class Game {
     const stage = new Container();
     app.stage.addChild(stage);
 
+    const bottomBar = new BottomBar();
     const wheel = new Wheel(config.wheel);
     const pointer = new Pointer(config.pointer);
     const winAnimation = new WinAnimation(config.winAnimation);
@@ -32,7 +34,7 @@ class Game {
     const wheelController = new WheelController(wheel, pointer, app.ticker);
     const prizePicker = new WeightedRandom(config.wheel.prizes);
 
-    stage.addChild(wheel, pointer, winAnimation, screenFlash);
+    stage.addChild(bottomBar, wheel, pointer, winAnimation, screenFlash);
 
     app.stage.eventMode = "static";
     app.stage.on("pointerdown", () => {
@@ -47,9 +49,19 @@ class Game {
         winAnimation.skip();
         return;
       }
+      bottomBar.changeState(true);
       document.body.style.cursor = "pointer";
       wheelController.spin(prizePicker.pick(), (prize) => {
-        winAnimation.show(prize);
+        bottomBar.changeState(false);
+        const onStart = () => {
+          document.body.style.cursor = "pointer";
+          bottomBar.changeState(true);
+        };
+        const onComplete = () => {
+          document.body.style.cursor = "default";
+          bottomBar.changeState(false);
+        };
+        winAnimation.show(prize, onStart, onComplete);
       });
     });
 
