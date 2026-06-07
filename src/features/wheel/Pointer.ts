@@ -5,6 +5,7 @@ export interface PointerConfig {
   color: number;
   halfWidth: number;
   height: number;
+  offset: number;
   flickAngle: number;
   flickDuration: number;
   returnDuration: number;

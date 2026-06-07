@@ -1,5 +1,44 @@
 import gsap from "gsap";
-import { Container, Graphics, Text } from "pixi.js";
+import { Container, Graphics, PointLike, Text, TextStyle } from "pixi.js";
+
+export interface WinAnimationConfig {
+  tiers: WinTier[];
+  overlay: {
+    width: number;
+    height: number;
+    fill: {
+      color: number;
+      alpha: number;
+    };
+  };
+  tierText: {
+    position: Partial<PointLike>;
+    style: Partial<TextStyle>;
+  };
+  counterText: {
+    position: Partial<PointLike>;
+    style: Partial<TextStyle>;
+  };
+  showTl: {
+    alphaDuration: number;
+    ease: string;
+    tierScaleDuration: number;
+    tierScaleEase: string;
+    counterScaleDuration: number;
+    counterScaleEase: string;
+    counterDelay: number;
+    counterEase: string;
+  };
+  countUp: {
+    duration: number;
+    ease: string;
+  };
+  dismiss: {
+    duration: number;
+    delay: number;
+    ease: string;
+  };
+}
 
 interface WinTier {
   minValue: number;
@@ -7,69 +46,60 @@ interface WinTier {
   color: number;
 }
 
-const WIN_TIERS: WinTier[] = [
-  { minValue: 100, label: "ULTRA WIN", color: 0xff00ff },
-  { minValue: 50, label: "EPIC WIN", color: 0xff8800 },
-  { minValue: 10, label: "BIG WIN", color: 0xffff00 },
-];
-
 export class WinAnimation extends Container {
   private overlay: Graphics;
   private tierText: Text;
   private counterText: Text;
   private tl?: gsap.core.Timeline;
   private tween?: gsap.core.Tween;
+  private config: WinAnimationConfig;
 
-  constructor() {
+  constructor(config: WinAnimationConfig) {
     super();
+    this.config = config;
     this.visible = false;
     this.eventMode = "static";
 
     this.overlay = new Graphics()
-      .rect(0, 0, 2000, 2000)
-      .fill({ color: 0x000000, alpha: 0.75 });
-    this.overlay.pivot.set(1000, 1000);
+      .rect(0, 0, config.overlay.width, config.overlay.height)
+      .fill({
+        color: config.overlay.fill.color,
+        alpha: config.overlay.fill.alpha,
+      });
+    this.overlay.pivot.set(config.overlay.width / 2, config.overlay.height / 2);
     this.addChild(this.overlay);
 
     this.tierText = new Text({
       text: "",
       style: {
-        fontSize: 96,
-        fontWeight: "bold",
-        fill: 0xffff00,
-        dropShadow: {
-          color: 0x000000,
-          blur: 12,
-          distance: 6,
-          alpha: 0.8,
-        },
+        ...config.tierText.style,
       },
     });
+    this.tierText.position.set(
+      config.tierText.position.x,
+      config.tierText.position.y,
+    );
     this.tierText.anchor.set(0.5);
     this.addChild(this.tierText);
 
     this.counterText = new Text({
       text: "0",
       style: {
-        fontSize: 56,
-        fontWeight: "bold",
-        fill: 0xffffff,
-        dropShadow: {
-          color: 0x000000,
-          blur: 8,
-          distance: 4,
-          alpha: 0.8,
-        },
+        ...config.counterText.style,
       },
     });
     this.counterText.anchor.set(0.5);
-    this.counterText.position.set(0, 60);
+    this.counterText.position.set(
+      config.counterText.position.x,
+      config.counterText.position.y,
+    );
 
     this.addChild(this.counterText);
   }
 
   show(prize: number) {
-    const tier = WIN_TIERS.find((t) => prize >= t.minValue);
+    const tier = this.config.tiers.find((t) => prize >= t.minValue);
+
     if (!tier) {
       return;
     }
@@ -77,8 +107,7 @@ export class WinAnimation extends Container {
     document.body.style.cursor = "pointer";
 
     this.tierText.text = tier.label;
-    this.tierText.position.set(0, -50);
-    (this.tierText.style as { fill: number }).fill = tier.color;
+    this.tierText.style.fill = tier.color;
     this.counterText.text = "0.00";
     this.tierText.scale.set(0);
     this.counterText.scale.set(0);
@@ -89,25 +118,41 @@ export class WinAnimation extends Container {
     gsap.killTweensOf(this.tierText.scale);
     gsap.killTweensOf(this.counterText.scale);
 
+    const tlConfig = this.config.showTl;
     const tl = gsap.timeline();
     this.tl = tl;
-    tl.to(this, { alpha: 1, duration: 0.3, ease: "power1.out" })
+    tl.to(this, {
+      alpha: 1,
+      duration: tlConfig.alphaDuration,
+      ease: tlConfig.ease,
+    })
       .to(
         this.tierText.scale,
-        { x: 1, y: 1, duration: 0.6, ease: "back.out(2.5)" },
+        {
+          x: 1,
+          y: 1,
+          duration: tlConfig.tierScaleDuration,
+          ease: tlConfig.tierScaleEase,
+        },
         "-=0.1",
       )
       .to(
         this.counterText.scale,
-        { x: 1, y: 1, duration: 0.4, ease: "back.out(1.7)" },
-        "-=0.3",
+        {
+          x: 1,
+          y: 1,
+          duration: tlConfig.counterScaleDuration,
+          ease: tlConfig.counterScaleEase,
+        },
+        `-=${tlConfig.counterDelay}`,
       );
 
+    const countUpConfig = this.config.countUp;
     const counter = { value: 0 };
     const tween = gsap.to(counter, {
       value: prize,
-      duration: 4,
-      ease: "power1.out",
+      duration: countUpConfig.duration,
+      ease: countUpConfig.ease,
       onUpdate: () => {
         this.counterText.text = counter.value.toFixed(2);
       },
@@ -120,12 +165,13 @@ export class WinAnimation extends Container {
   }
 
   private dismiss() {
+    const config = this.config.dismiss;
     gsap.killTweensOf(this);
     gsap.to(this, {
       alpha: 0,
-      duration: 0.3,
-      delay: 0.2,
-      ease: "power1.in",
+      duration: config.duration,
+      delay: config.delay,
+      ease: config.ease,
       onComplete: () => {
         this.visible = false;
       },

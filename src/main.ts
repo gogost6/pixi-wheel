@@ -1,5 +1,6 @@
 import { Application, Container } from "pixi.js";
 import { WeightedRandom } from "./WeightedRandom";
+import config from "./config";
 import {
   Pointer,
   ScreenFlash,
@@ -7,55 +8,6 @@ import {
   WheelController,
   WinAnimation,
 } from "./features";
-
-const config = {
-  background: "#1099bb",
-  margin: 40,
-  wheel: {
-    radius: 280,
-    spinRevolutions: 4,
-    spinDuration: 6,
-    colors: [
-      0xff0000, 0x00ff00, 0x0000ff, 0xffff00, 0xff00ff, 0x00ffff, 0xff8800,
-      0x88ff00, 0x0088ff, 0xff0088, 0x8800ff, 0x00ff88,
-    ],
-    prizes: [
-      { value: 0.1, weight: 10000000 },
-      { value: 0.2, weight: 5000000 },
-      { value: 0.5, weight: 2000000 },
-      { value: 1, weight: 1000000 },
-      { value: 2, weight: 500000 },
-      { value: 5, weight: 100000 },
-      { value: 10, weight: 50000 },
-      { value: 20, weight: 10000 },
-      { value: 50, weight: 5000 },
-      { value: 100, weight: 1000 },
-      { value: 200, weight: 100 },
-      { value: 500, weight: 10 },
-    ],
-    borderColor: 0x000000,
-    borderWidth: 2,
-    labelFontSize: 14,
-    labelColor: 0xffffff,
-  },
-  pointer: {
-    color: 0xff0000,
-    halfWidth: 15,
-    height: 40,
-    offset: 20,
-    flickAngle: -20,
-    flickDuration: 0.1,
-    returnDuration: 0.25,
-  },
-  screenFlash: {
-    color: 0xffffff,
-    alpha: 0.2,
-    duration: 0.2,
-    ease: "power1.inOut",
-    width: 4000,
-    height: 4000,
-  },
-};
 
 class Game {
   constructor() {
@@ -76,7 +28,7 @@ class Game {
     const wheel = new Wheel(config.wheel);
     const pointer = new Pointer(config.pointer);
     pointer.position.set(0, -config.wheel.radius - config.pointer.offset);
-    const winAnimation = new WinAnimation();
+    const winAnimation = new WinAnimation(config.winAnimation);
     const screenFlash = new ScreenFlash(config.screenFlash);
 
     stage.addChild(wheel, pointer, winAnimation, screenFlash);
