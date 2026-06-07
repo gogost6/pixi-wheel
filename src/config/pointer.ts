@@ -7,5 +7,5 @@ export default {
   flickAngle: -20,
   flickDuration: 0.1,
   returnDuration: 0.25,
-  offset: 20,
+  position: { x: 0, y: -300 },
 } satisfies PointerConfig;

@@ -1,14 +1,14 @@
 import gsap from "gsap";
-import { Container, Graphics } from "pixi.js";
+import { Container, Graphics, PointLike } from "pixi.js";
 
 export interface PointerConfig {
   color: number;
   halfWidth: number;
   height: number;
-  offset: number;
   flickAngle: number;
   flickDuration: number;
   returnDuration: number;
+  position: Partial<PointLike>;
 }
 
 export class Pointer extends Container {
@@ -17,6 +17,7 @@ export class Pointer extends Container {
   constructor(config: PointerConfig) {
     super();
     this.config = config;
+    this.position.set(config.position.x, config.position.y);
     this.drawPointer();
   }
 

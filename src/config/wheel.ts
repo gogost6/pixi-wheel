@@ -20,7 +20,7 @@ export default {
     { value: 50, weight: 5000 },
     { value: 100, weight: 1000 },
     { value: 200, weight: 100 },
-    { value: 500, weight: 100000000000 },
+    { value: 500, weight: 10 },
   ],
   borderColor: 0x000000,
   borderWidth: 2,

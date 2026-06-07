@@ -27,14 +27,12 @@ class Game {
 
     const wheel = new Wheel(config.wheel);
     const pointer = new Pointer(config.pointer);
-    pointer.position.set(0, -config.wheel.radius - config.pointer.offset);
     const winAnimation = new WinAnimation(config.winAnimation);
     const screenFlash = new ScreenFlash(config.screenFlash);
-
-    stage.addChild(wheel, pointer, winAnimation, screenFlash);
-
     const wheelController = new WheelController(wheel, pointer, app.ticker);
     const prizePicker = new WeightedRandom(config.wheel.prizes);
+
+    stage.addChild(wheel, pointer, winAnimation, screenFlash);
 
     app.stage.eventMode = "static";
     app.stage.on("pointerdown", () => {
