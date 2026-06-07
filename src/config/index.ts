@@ -5,7 +5,7 @@ import winAnimation from "./winAnimation";
 
 export default {
   background: "#1099bb",
-  margin: 40,
+  margin: 7,
   wheel,
   pointer,
   screenFlash,
