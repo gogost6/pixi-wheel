@@ -33,6 +33,12 @@ export interface WinAnimationConfig {
     duration: number;
     ease: string;
   };
+  bounce: {
+    delay: number;
+    scale: number;
+    duration: number;
+    ease: string;
+  };
   dismiss: {
     duration: number;
     delay: number;
@@ -88,6 +94,7 @@ export class WinAnimation extends Container {
         ...config.counterText.style,
       },
     });
+    this.counterText.scale.set(0);
     this.counterText.anchor.set(0.5);
     this.counterText.position.set(
       config.counterText.position.x,
@@ -122,6 +129,7 @@ export class WinAnimation extends Container {
     gsap.killTweensOf(this.tierText.scale);
     gsap.killTweensOf(this.counterText.scale);
 
+    let bounceTween: gsap.core.Tween | null = null;
     const tlConfig = this.config.showTl;
     const tl = gsap.timeline();
     this.tl = tl;
@@ -147,8 +155,19 @@ export class WinAnimation extends Container {
           y: 1,
           duration: tlConfig.counterScaleDuration,
           ease: tlConfig.counterScaleEase,
+          onComplete: () => {
+            bounceTween = gsap.to(this.counterText.scale, {
+              x: this.config.bounce.scale,
+              y: this.config.bounce.scale,
+              delay: 0.1,
+              duration: this.config.bounce.duration,
+              ease: this.config.bounce.ease,
+              repeat: -1,
+              yoyo: true,
+            });
+          },
         },
-        `-=${tlConfig.counterDelay}`,
+        `${tlConfig.counterDelay}`,
       );
 
     const countUpConfig = this.config.countUp;
@@ -157,12 +176,14 @@ export class WinAnimation extends Container {
       value: prize,
       duration: countUpConfig.duration,
       ease: countUpConfig.ease,
+      delay: tlConfig.counterDelay,
       onUpdate: () => {
         this.counterText.text = counter.value.toFixed(2);
       },
       onComplete: () => {
         onComplete();
         this.dismiss();
+        bounceTween?.kill();
       },
     });
     this.tween = tween;
@@ -178,6 +199,7 @@ export class WinAnimation extends Container {
       ease: config.ease,
       onComplete: () => {
         this.visible = false;
+        this.counterText.scale.set(0);
       },
     });
   }

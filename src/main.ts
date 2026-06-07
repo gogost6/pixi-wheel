@@ -32,8 +32,8 @@ class Game {
     const winAnimation = new WinAnimation(config.winAnimation);
     const screenFlash = new ScreenFlash(config.screenFlash);
     const wheelController = new WheelController(wheel, pointer, app.ticker);
-    const prizePicker = new WeightedRandom(config.wheel.prizes);
-    // const riggedPrizePicker = new WeightedRandom(config.wheel.riggedPrizes);
+    // const prizePicker = new WeightedRandom(config.wheel.prizes);
+    const riggedPrizePicker = new WeightedRandom(config.wheel.riggedPrizes);
 
     stage.addChild(bottomBar, wheel, pointer, winAnimation, screenFlash);
 
@@ -52,7 +52,7 @@ class Game {
       }
       bottomBar.changeState(true);
       document.body.style.cursor = "pointer";
-      wheelController.spin(prizePicker.pick(), (prize) => {
+      wheelController.spin(riggedPrizePicker.pick(), (prize) => {
         bottomBar.changeState(false);
         const onStart = () => {
           document.body.style.cursor = "pointer";

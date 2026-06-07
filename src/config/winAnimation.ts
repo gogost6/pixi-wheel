@@ -33,8 +33,14 @@ export default {
     tierScaleEase: "elastic.out(1.2, 0.5)",
   },
   countUp: {
-    duration: 2,
+    duration: 4,
     ease: "power1.out",
+  },
+  bounce: {
+    delay: 0.1,
+    scale: 1.2,
+    duration: 0.3,
+    ease: "power1.inOut",
   },
   dismiss: {
     duration: 0.3,
