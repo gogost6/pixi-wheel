@@ -33,6 +33,7 @@ class Game {
     const screenFlash = new ScreenFlash(config.screenFlash);
     const wheelController = new WheelController(wheel, pointer, app.ticker);
     const prizePicker = new WeightedRandom(config.wheel.prizes);
+    // const riggedPrizePicker = new WeightedRandom(config.wheel.riggedPrizes);
 
     stage.addChild(bottomBar, wheel, pointer, winAnimation, screenFlash);
 

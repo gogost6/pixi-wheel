@@ -7,6 +7,7 @@ export interface WheelConfig {
   spinDuration: number;
   colors: number[];
   prizes: { value: number; weight: number }[];
+  riggedPrizes: { value: number; weight: number }[];
   borderColor: number;
   borderWidth: number;
   labelFontSize: number;

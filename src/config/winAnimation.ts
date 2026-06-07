@@ -42,8 +42,11 @@ export default {
     ease: "power1.in",
   },
   tiers: [
+    { minValue: 500, label: "MAX WIN", color: 0xff00ff },
+    { minValue: 200, label: "GIGANTIC WIN", color: 0xff00ff },
     { minValue: 100, label: "ULTRA WIN", color: 0xff00ff },
     { minValue: 50, label: "EPIC WIN", color: 0xff8800 },
-    { minValue: 10, label: "BIG WIN", color: 0xffff00 },
+    { minValue: 20, label: "BIG WIN", color: 0xff8800 },
+    { minValue: 10, label: "DECENT WIN", color: 0xffff00 },
   ],
 } satisfies WinAnimationConfig;
